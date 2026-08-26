@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>for u :3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Great+Vibes&family=Courier+Prime&family=Baloo+2:wght@700;800&family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff8fd6;
+    --lav:#c39bff;
+    --blue:#7fd8ff;
+    --gold:#ffe08a;
+    --mint:#8affc1;
+    --purple:#b06bd6;
+    --purple-deep:#7a3ea8;
+  }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; height:100%; overflow:hidden;
+    background:#04040c;
+    font-family:'Courier Prime', monospace;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #container{ position:fixed; inset:0; cursor:grab; }
+  #container.dragging{ cursor:grabbing; }
+  #container canvas{ display:block; }
+
+  #hint{
+    position:fixed;
+    bottom:22px; left:0; right:0;
+    text-align:center;
+    color:rgba(255,255,255,.55);
+    font-size:13px;
+    letter-spacing:.5px;
+    pointer-events:none;
+    z-index:5;
+    transition:opacity .5s ease;
+    text-shadow:0 0 8px rgba(200,160,255,.4);
+  }
+
+  /* ---------- book page overlay ---------- */
+  #book-overlay{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:10;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  #book-overlay.open{ pointer-events:auto; opacity:1; }
+
+  .page{
+    position:relative;
+    width:min(90vw, 520px);
+    height:min(80vh, 660px);
+    padding:46px 36px 30px;
+    border-radius:10px 18px 18px 10px;
+    background:
+      radial-gradient(ellipse at 15% 8%, rgba(200,140,255,.16), transparent 45%),
+      radial-gradient(ellipse at 85% 92%, rgba(255,150,200,.12), transparent 45%),
+      linear-gradient(165deg, #2b1140, #190a2b 55%, #0e0619);
+    background-color:#190a2b;
+    border:1px solid rgba(255,220,150,.28);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.04),
+      inset 0 0 50px rgba(160,90,220,.12),
+      -6px 0 0 rgba(30,10,35,.5),
+      0 25px 60px rgba(0,0,0,.6),
+      0 0 70px rgba(180,120,255,.22);
+    transform-origin: left center;
+    transform: perspective(1400px) rotateY(-18deg) scale(.94);
+    opacity:0;
+    transition: transform .6s cubic-bezier(.22,.9,.32,1.15), opacity .5s ease;
+    overflow:hidden;
+  }
+  .page::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.5px 1.5px at 82% 12%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 30% 82%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.5px 1.5px at 70% 70%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 90% 55%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1.5px 1.5px at 20% 55%, rgba(255,255,255,.3), transparent);
+    pointer-events:none;
+    z-index:0;
+  }
+  #book-overlay.open .page{
+    transform: perspective(1400px) rotateY(0deg) scale(1);
+    opacity:1;
+  }
+
+  .corner{
+    position:absolute;
+    width:110px; height:110px;
+    pointer-events:none;
+    opacity:.8;
+    z-index:1;
+  }
+  .corner-tl{ top:6px; left:6px; }
+  .corner-tr{ top:6px; right:6px; transform:scaleX(-1); }
+  .corner-br{ bottom:6px; right:6px; transform:scale(-1,-1); }
+
+  .page-text{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    margin-top:8px;
+  }
+  .crush-text{
+    font-family:'Great Vibes', cursive;
+    font-weight:400;
+    font-size:clamp(26px, 6.6vw, 40px);
+    color:#ffe9c7;
+    letter-spacing:.5px;
+    text-shadow:
+      0 0 14px rgba(255,205,140,.55),
+      0 0 30px rgba(200,120,255,.25);
+  }
+  .line-divider{
+    width:150px;
+    margin:34px auto;
+    opacity:.85;
+  }
+  .love-text{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-weight:900;
+    font-size:clamp(27px, 7.4vw, 46px);
+    letter-spacing:.5px;
+    line-height:1.25;
+    -webkit-text-stroke:.6px rgba(255,255,255,.35);
+    background-image:linear-gradient(90deg,
+      var(--pink), var(--gold), var(--mint), var(--blue), var(--lav), var(--pink));
+    background-size:300% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    filter:drop-shadow(0 0 18px rgba(200,140,255,.35));
+    animation: hueSlide 4s linear infinite, softPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes hueSlide{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:300% 50%; }
+  }
+  @keyframes softPulse{
+    0%,100%{ filter:brightness(1) drop-shadow(0 0 4px rgba(255,255,255,.25)); }
+    50%{ filter:brightness(1.2) drop-shadow(0 0 12px rgba(255,255,255,.45)); }
+  }
+
+  .hearts-field{
+    position:absolute;
+    inset:0;
+    z-index:3;
+  }
+  .heart{
+    position:absolute;
+    left:0; top:0;
+    cursor:grab;
+    touch-action:none;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.18));
+    will-change:transform;
+  }
+  .heart:active{ cursor:grabbing; }
+
+  .kiss-overlay{
+    position:absolute;
+    inset:0;
+    z-index:6;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    opacity:0;
+    transform:scale(.6);
+    transition:opacity .25s ease, transform .35s cubic-bezier(.3,1.6,.4,1);
+  }
+  .kiss-overlay.show{
+    opacity:1;
+    transform:scale(1);
+  }
+  .mwah-text{
+    margin-top:6px;
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    font-size:clamp(28px, 8vw, 46px);
+    color:#ff4d80;
+    letter-spacing:2px;
+    text-shadow: 0 3px 0 rgba(255,255,255,.5), 0 0 24px rgba(255,90,140,.6);
+  }
+</style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<div id="book-overlay">
+  <div class="page" id="page">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-br"></div>
+
+    <div class="page-text">
+      <div class="crush-text">i have a crush on u mommy</div>
+      <svg class="line-divider" viewBox="0 0 150 20" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="10" x2="55" y2="10" stroke="#c9a3ff" stroke-width="1.4" opacity=".7"/>
+        <path d="M75 3 L80 10 L75 17 L70 10 Z" fill="#ffe08a"/>
+        <line x1="95" y1="10" x2="150" y2="10" stroke="#c9a3ff" stroke-width="1.4" opacity=".7"/>
+      </svg>
+      <div class="love-text">I LOVE U SO MUCHH :333</div>
+    </div>
+
+    <div class="hearts-field" id="heartsField"></div>
+
+    <div class="kiss-overlay" id="kissOverlay">
+      <svg width="120" height="80" viewBox="0 0 120 80">
+        <path d="M60 18 C40 -2, 4 8, 8 34 C11 54, 40 66, 60 78 C80 66, 109 54, 112 34 C116 8, 80 -2, 60 18 Z"
+          fill="#ff5c85" stroke="#c4184f" stroke-width="2"/>
+        <path d="M18 30 C26 20, 44 18, 60 30 C76 18, 94 20, 102 30"
+          fill="none" stroke="#c4184f" stroke-width="2" opacity=".5"/>
+      </svg>
+      <div class="mwah-text">MWAHH</div>
+    </div>
+  </div>
+</div>
+
+<div id="hint">drag to spin • tap once to open • tap twice on the cover for magic :3</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============================================================
+   corner flourish (SVG, purple) — injected into each .corner
+   ============================================================ */
+const FLOURISH_SVG = `
+<svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#c9a3ff" stroke-width="2.4" opacity="0.85">
+    <path d="M6 6 C 6 40, 6 60, 40 60 C 60 60, 60 40, 90 40"/>
+    <path d="M6 6 C 40 6, 60 6, 60 40 C 60 60, 40 60, 40 90"/>
+    <circle cx="6" cy="6" r="4" fill="#ffe08a" stroke="none"/>
+    <circle cx="40" cy="60" r="3" fill="#ff8fd6" stroke="none"/>
+    <circle cx="60" cy="40" r="3" fill="#c39bff" stroke="none"/>
+  </g>
+  <g fill="#c9a3ff" opacity="0.75">
+    <path d="M16 16 c3 -6 11 -6 11 1 c0 -7 8 -7 11 -1 c0 8 -11 14 -11 14 c0 0 -11 -6 -11 -14 Z" transform="translate(-6,-6) scale(0.55)"/>
+  </g>
+</svg>`;
+document.querySelectorAll('.corner').forEach(c => c.innerHTML = FLOURISH_SVG);
+
+/* ============================================================
+   scene setup
+   ============================================================ */
+const container = document.getElementById('container');
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x04040c, 0.035);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.set(0, 0.2, 6.4);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+container.appendChild(renderer.domElement);
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* ---------- lights ---------- */
+scene.add(new THREE.AmbientLight(0x9a8cff, 0.6));
+const key = new THREE.DirectionalLight(0xffe0c2, 0.95);
+key.position.set(3, 4, 5);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x8fd1ff, 0.55);
+rim.position.set(-4, 2, -3);
+scene.add(rim);
+
+/* ============================================================
+   colorful twinkling starfield
+   ============================================================ */
+const STAR_COUNT = 1500;
+const starGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(STAR_COUNT*3);
+const starPhase = new Float32Array(STAR_COUNT);
+const starSize = new Float32Array(STAR_COUNT);
+const starColor = new Float32Array(STAR_COUNT*3);
+const palette = [
+  [1,1,1], [1,0.56,0.84], [1,0.878,0.541], [0.541,1,0.757], [0.498,0.847,1], [0.765,0.608,1]
+];
+for(let i=0;i<STAR_COUNT;i++){
+  const r = 30 + Math.random()*40;
+  const theta = Math.random()*Math.PI*2;
+  const phi = Math.acos((Math.random()*2)-1);
+  starPos[i*3]   = r*Math.sin(phi)*Math.cos(theta);
+  starPos[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+  starPos[i*3+2] = r*Math.cos(phi) - 10;
+  starPhase[i] = Math.random()*Math.PI*2;
+  starSize[i] = Math.random()*2.4 + 0.6;
+  const col = palette[Math.floor(Math.random()*palette.length)];
+  starColor[i*3]=col[0]; starColor[i*3+1]=col[1]; starColor[i*3+2]=col[2];
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+starGeo.setAttribute('phase', new THREE.BufferAttribute(starPhase,1));
+starGeo.setAttribute('size', new THREE.BufferAttribute(starSize,1));
+starGeo.setAttribute('color', new THREE.BufferAttribute(starColor,3));
+
+const starMat = new THREE.ShaderMaterial({
+  transparent:true,
+  depthWrite:false,
+  uniforms:{ uTime:{ value:0 } },
+  vertexShader:`
+    attribute float phase;
+    attribute float size;
+    attribute vec3 color;
+    uniform float uTime;
+    varying float vAlpha;
+    varying vec3 vColor;
+    void main(){
+      vAlpha = 0.35 + 0.65*sin(uTime*1.6 + phase);
+      vColor = color;
+      vec4 mv = modelViewMatrix * vec4(position,1.0);
+      gl_PointSize = size * (300.0/-mv.z);
+      gl_Position = projectionMatrix * mv;
+    }
+  `,
+  fragmentShader:`
+    varying float vAlpha;
+    varying vec3 vColor;
+    void main(){
+      vec2 c = gl_PointCoord - vec2(0.5);
+      float d = length(c);
+      if(d > 0.5) discard;
+      float glow = smoothstep(0.5, 0.0, d);
+      gl_FragColor = vec4(vColor, glow*vAlpha);
+    }
+  `
+});
+const stars = new THREE.Points(starGeo, starMat);
+scene.add(stars);
+
+/* ---------- kitty faces drifting among the stars ---------- */
+function makeKittyFaceTexture(furHex){
+  const c = document.createElement('canvas');
+  c.width = 96; c.height = 96;
+  const ctx = c.getContext('2d');
+  const cx=48, cy=52, r=30;
+  ctx.fillStyle = furHex;
+  [-1,1].forEach(side=>{
+    ctx.beginPath();
+    ctx.moveTo(cx+side*r*0.6, cy-r*0.5);
+    ctx.lineTo(cx+side*r*1.05, cy-r*1.35);
+    ctx.lineTo(cx+side*r*0.15, cy-r*0.85);
+    ctx.closePath();
+    ctx.fill();
+  });
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, r, r*0.92, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(40,20,20,0.7)';
+  ctx.lineWidth = 3;
+  ctx.lineCap='round';
+  [-1,1].forEach(side=>{
+    ctx.beginPath();
+    ctx.arc(cx+side*r*0.32, cy-r*0.05, r*0.16, Math.PI*1.15, Math.PI*1.85, side<0);
+    ctx.stroke();
+  });
+  ctx.beginPath();
+  ctx.arc(cx, cy+r*0.24, r*0.22, 0.15*Math.PI, 0.85*Math.PI);
+  ctx.stroke();
+  return new THREE.CanvasTexture(c);
+}
+const kittyFurColors = ['#fff1de','#ffc7e2','#d9c2ff','#c2e9ff','#c2ffd9','#ffe0a8'];
+const kittySprites = [];
+const KITTY_COUNT = 11;
+for(let i=0;i<KITTY_COUNT;i++){
+  const tex = makeKittyFaceTexture(kittyFurColors[i % kittyFurColors.length]);
+  const mat = new THREE.SpriteMaterial({ map:tex, transparent:true, depthWrite:false });
+  const spr = new THREE.Sprite(mat);
+  const r = 14 + Math.random()*12;
+  const theta = Math.random()*Math.PI*2;
+  const phi = Math.acos((Math.random()*2)-1);
+  spr.position.set(
+    r*Math.sin(phi)*Math.cos(theta),
+    r*Math.sin(phi)*Math.sin(theta)*0.6,
+    r*Math.cos(phi) - 8
+  );
+  const s = 0.9 + Math.random()*0.7;
+  spr.scale.set(s,s,1);
+  mat.opacity = 0;
+  scene.add(spr);
+  kittySprites.push({
+    obj:spr,
+    phase: Math.random()*Math.PI*2,
+    period: 7 + Math.random()*8,
+    basePos: spr.position.clone(),
+    driftPhase: Math.random()*Math.PI*2
+  });
+}
+
+/* ============================================================
+   purple flourish drawn on canvas (for the book cover)
+   ============================================================ */
+function drawCanvasFlourish(ctx, x, y, scale, mx, my){
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale*mx, scale*my);
+  ctx.strokeStyle = 'rgba(190,130,230,0.8)';
+  ctx.lineWidth = 2.6;
+  ctx.beginPath();
+  ctx.moveTo(6,6);
+  ctx.bezierCurveTo(6,40,6,60,40,60);
+  ctx.bezierCurveTo(60,60,60,40,90,40);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(6,6);
+  ctx.bezierCurveTo(40,6,60,6,60,40);
+  ctx.bezierCurveTo(60,60,40,60,40,90);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,224,138,0.9)';
+  ctx.beginPath(); ctx.arc(6,6,4,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,143,214,0.85)';
+  ctx.beginPath(); ctx.arc(40,60,3,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(195,155,255,0.85)';
+  ctx.beginPath(); ctx.arc(60,40,3,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawSparkle(ctx, x, y, s, col){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.moveTo(0,-s); ctx.lineTo(s*0.28,-s*0.28); ctx.lineTo(s,0);
+  ctx.lineTo(s*0.28,s*0.28); ctx.lineTo(0,s); ctx.lineTo(-s*0.28,s*0.28);
+  ctx.lineTo(-s,0); ctx.lineTo(-s*0.28,-s*0.28);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+/* ============================================================
+   cover face texture — flat 2D drawing (ears, whiskers, :3 face)
+   ============================================================ */
+const COVER_W = 640, COVER_H = 860;
+const coverCanvas = document.createElement('canvas');
+coverCanvas.width = COVER_W; coverCanvas.height = COVER_H;
+const cctx = coverCanvas.getContext('2d');
+const coverTexture = new THREE.CanvasTexture(coverCanvas);
+coverTexture.anisotropy = 4;
+
+function drawCoverBase(){
+  const g = cctx.createRadialGradient(COVER_W/2, COVER_H*0.42, 40, COVER_W/2, COVER_H*0.42, COVER_H*0.75);
+  g.addColorStop(0, '#4a1a44');
+  g.addColorStop(1, '#26102e');
+  cctx.fillStyle = g;
+  cctx.fillRect(0,0,COVER_W,COVER_H);
+
+  cctx.strokeStyle = 'rgba(255,224,138,0.55)';
+  cctx.lineWidth = 5;
+  cctx.strokeRect(28, 28, COVER_W-56, COVER_H-56);
+  cctx.strokeStyle = 'rgba(255,224,138,0.25)';
+  cctx.lineWidth = 2;
+  cctx.strokeRect(40, 40, COVER_W-80, COVER_H-80);
+
+  drawCanvasFlourish(cctx, 46, 46, 0.85, 1, 1);
+  drawCanvasFlourish(cctx, COVER_W-46, 46, 0.85, -1, 1);
+  drawCanvasFlourish(cctx, COVER_W-46, COVER_H-46, 0.85, -1, -1);
+
+  const sparkleCols = ['#ffe08a','#ff8fd6','#c39bff','#8affc1'];
+  const sparklePts = [[110,150],[COVER_W-100,190],[90,COVER_H-160],[COVER_W-120,COVER_H-140],[COVER_W/2-170,COVER_H/2],[COVER_W/2+175,COVER_H/2+30]];
+  sparklePts.forEach((p,i)=>{
+    drawSparkle(cctx, p[0], p[1], 9+((i%3)*2), sparkleCols[i % sparkleCols.length]);
+  });
+}
+
+const CX = COVER_W/2, CY = COVER_H*0.42;
+const R = 95;
+
+function drawHeartPath(ctx, cx, cy, s){
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + s*0.3);
+  ctx.bezierCurveTo(cx - s, cy - s*0.6, cx - s*0.5, cy - s*1.3, cx, cy - s*0.55);
+  ctx.bezierCurveTo(cx + s*0.5, cy - s*1.3, cx + s, cy - s*0.6, cx, cy + s*0.3);
+  ctx.closePath();
+}
+
+function drawEarsAndHead(){
+  cctx.fillStyle = '#fff1de';
+  [-1,1].forEach(side=>{
+    cctx.beginPath();
+    cctx.moveTo(CX+side*R*0.62, CY-R*0.55);
+    cctx.lineTo(CX+side*R*1.05, CY-R*1.35);
+    cctx.lineTo(CX+side*R*0.18, CY-R*0.85);
+    cctx.closePath();
+    cctx.fill();
+  });
+  cctx.fillStyle = '#ffb6c8';
+  [-1,1].forEach(side=>{
+    cctx.beginPath();
+    cctx.moveTo(CX+side*R*0.58, CY-R*0.62);
+    cctx.lineTo(CX+side*R*0.85, CY-R*1.1);
+    cctx.lineTo(CX+side*R*0.35, CY-R*0.8);
+    cctx.closePath();
+    cctx.fill();
+  });
+  cctx.fillStyle = '#fff1de';
+  cctx.beginPath();
+  cctx.ellipse(CX, CY, R, R*0.92, 0, 0, Math.PI*2);
+  cctx.fill();
+}
+
+function drawWhiskers(){
+  cctx.strokeStyle = 'rgba(70,40,40,0.55)';
+  cctx.lineWidth = 3;
+  cctx.lineCap = 'round';
+  [-1,1].forEach(side=>{
+    for(let i=0;i<3;i++){
+      const y = CY + R*0.28 + i*14;
+      cctx.beginPath();
+      cctx.moveTo(CX + side*R*0.32, y);
+      cctx.lineTo(CX + side*R*1.15, y - 10 + i*10);
+      cctx.stroke();
+    }
+  });
+}
+
+function drawBlush(){
+  [-1,1].forEach(side=>{
+    cctx.beginPath();
+    cctx.fillStyle = 'rgba(255,140,170,0.5)';
+    cctx.ellipse(CX+side*R*0.5, CY+R*0.18, R*0.16, R*0.1, 0, 0, Math.PI*2);
+    cctx.fill();
+  });
+}
+
+const expressions = [
+  function(){
+    drawWhiskers(); drawBlush();
+    cctx.fillStyle = '#2a1a1a';
+    [-1,1].forEach(side=>{
+      cctx.beginPath();
+      cctx.ellipse(CX+side*R*0.32, CY-R*0.08, R*0.09, R*0.12, 0, 0, Math.PI*2);
+      cctx.fill();
+      cctx.fillStyle = '#fff';
+      cctx.beginPath();
+      cctx.ellipse(CX+side*R*0.32-3, CY-R*0.13, R*0.025, R*0.03, 0, 0, Math.PI*2);
+      cctx.fill();
+      cctx.fillStyle = '#2a1a1a';
+    });
+    cctx.strokeStyle = '#3a2323';
+    cctx.lineWidth = 3;
+    cctx.lineCap = 'round';
+    cctx.beginPath();
+    cctx.moveTo(CX-R*0.22, CY+R*0.22);
+    cctx.quadraticCurveTo(CX-R*0.05, CY+R*0.34, CX, CY+R*0.23);
+    cctx.quadraticCurveTo(CX+R*0.05, CY+R*0.34, CX+R*0.22, CY+R*0.22);
+    cctx.stroke();
+  },
+  function(){
+    drawWhiskers(); drawBlush();
+    cctx.strokeStyle = '#2a1a1a';
+    cctx.lineWidth = 4;
+    cctx.lineCap = 'round';
+    [-1,1].forEach(side=>{
+      cctx.beginPath();
+      cctx.arc(CX+side*R*0.32, CY-R*0.05, R*0.11, Math.PI*1.15, Math.PI*1.85, side<0);
+      cctx.stroke();
+    });
+    cctx.beginPath();
+    cctx.arc(CX, CY+R*0.22, R*0.18, 0.15*Math.PI, 0.85*Math.PI);
+    cctx.stroke();
+  },
+  function(){
+    drawWhiskers(); drawBlush();
+    cctx.fillStyle = '#ff5c8a';
+    [-1,1].forEach(side=>{
+      drawHeartPath(cctx, CX+side*R*0.32, CY-R*0.1, R*0.13);
+      cctx.fill();
+    });
+    cctx.strokeStyle = '#3a2323';
+    cctx.lineWidth = 3;
+    cctx.lineCap = 'round';
+    cctx.beginPath();
+    cctx.arc(CX, CY+R*0.22, R*0.15, 0.2*Math.PI, 0.8*Math.PI);
+    cctx.stroke();
+  },
+  function(){
+    drawWhiskers(); drawBlush();
+    cctx.strokeStyle = '#2a1a1a';
+    cctx.lineWidth = 4;
+    cctx.lineCap = 'round';
+    [-1,1].forEach(side=>{
+      cctx.beginPath();
+      cctx.arc(CX+side*R*0.32, CY-R*0.05, R*0.11, Math.PI*1.15, Math.PI*1.85, side<0);
+      cctx.stroke();
+    });
+    cctx.fillStyle = '#ff6f9c';
+    cctx.beginPath();
+    cctx.ellipse(CX, CY+R*0.24, R*0.09, R*0.065, 0, 0, Math.PI*2);
+    cctx.fill();
+    cctx.fillStyle = '#ff5c8a';
+    drawHeartPath(cctx, CX+R*0.75, CY-R*0.05, R*0.09);
+    cctx.fill();
+  }
+];
+
+let exprIndex = 0;
+function redrawCover(){
+  drawCoverBase();
+  drawEarsAndHead();
+  expressions[exprIndex]();
+  coverTexture.needsUpdate = true;
+}
+redrawCover();
+
+/* ============================================================
+   low-poly book (flat-shaded boxes) — the only 3D part
+   ============================================================ */
+const bookGroup = new THREE.Group();
+scene.add(bookGroup);
+
+const BOOK_W = 2.1, BOOK_H = 2.8, COVER_T = 0.09, PAGES_T = 0.5;
+
+const leatherMat = new THREE.MeshPhongMaterial({ color:0x3b1030, flatShading:true, shininess:18 });
+const leatherEdgeMat = new THREE.MeshPhongMaterial({ color:0x2a0b23, flatShading:true, shininess:10 });
+const pagesMat = new THREE.MeshPhongMaterial({ color:0xf5ead2, flatShading:true, shininess:4 });
+const insideCoverMat = new THREE.MeshPhongMaterial({ color:0x5c2050, flatShading:true, shininess:12 });
+
+const frontCoverMats = [
+  leatherEdgeMat, leatherEdgeMat,
+  leatherEdgeMat, leatherEdgeMat,
+  new THREE.MeshPhongMaterial({ map:coverTexture, flatShading:true }),
+  insideCoverMat
+];
+const backCoverMats = [
+  leatherEdgeMat, leatherEdgeMat,
+  leatherEdgeMat, leatherEdgeMat,
+  insideCoverMat,
+  leatherMat
+];
+
+const pagesBlock = new THREE.Mesh(
+  new THREE.BoxGeometry(BOOK_W*0.95, BOOK_H*0.95, PAGES_T),
+  pagesMat
+);
+pagesBlock.position.set(0.02, 0, 0);
+bookGroup.add(pagesBlock);
+
+const backCover = new THREE.Mesh(new THREE.BoxGeometry(BOOK_W, BOOK_H, COVER_T), backCoverMats);
+backCover.position.set(0, 0, -(PAGES_T/2 + COVER_T/2));
+bookGroup.add(backCover);
+
+const frontPivot = new THREE.Group();
+frontPivot.position.set(-BOOK_W/2, 0, PAGES_T/2);
+bookGroup.add(frontPivot);
+
+const frontGeo = new THREE.BoxGeometry(BOOK_W, BOOK_H, COVER_T);
+frontGeo.translate(BOOK_W/2, 0, COVER_T/2);
+const frontCover = new THREE.Mesh(frontGeo, frontCoverMats);
+frontPivot.add(frontCover);
+
+const spine = new THREE.Mesh(
+  new THREE.BoxGeometry(0.14, BOOK_H, PAGES_T + COVER_T*1.6),
+  leatherEdgeMat
+);
+spine.position.set(-BOOK_W/2, 0, 0);
+bookGroup.add(spine);
+
+bookGroup.scale.set(0.92, 0.92, 0.92);
+
+/* ============================================================
+   kitty fireworks (hearts, paws, stars burst) — 3D sprites
+   ============================================================ */
+function makeSpriteTexture(kind, color){
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = color;
+  if(kind==='heart'){
+    ctx.beginPath();
+    ctx.moveTo(32, 46);
+    ctx.bezierCurveTo(4, 24, 12, 4, 32, 18);
+    ctx.bezierCurveTo(52, 4, 60, 24, 32, 46);
+    ctx.closePath();
+    ctx.fill();
+  } else if(kind==='paw'){
+    ctx.beginPath(); ctx.ellipse(32,40,16,13,0,0,Math.PI*2); ctx.fill();
+    [[16,18],[27,10],[39,10],[50,18]].forEach(p=>{
+      ctx.beginPath(); ctx.ellipse(p[0],p[1],7,8,0,0,Math.PI*2); ctx.fill();
+    });
+  } else {
+    ctx.beginPath();
+    for(let i=0;i<5;i++){
+      const a1 = -Math.PI/2 + i*(2*Math.PI/5);
+      const a2 = a1 + Math.PI/5;
+      const p1 = [32+28*Math.cos(a1), 32+28*Math.sin(a1)];
+      const p2 = [32+12*Math.cos(a2), 32+12*Math.sin(a2)];
+      if(i===0) ctx.moveTo(p1[0],p1[1]); else ctx.lineTo(p1[0],p1[1]);
+      ctx.lineTo(p2[0],p2[1]);
+    }
+    ctx.closePath(); ctx.fill();
+  }
+  return new THREE.CanvasTexture(c);
+}
+
+const sparkColors = ['#ff8fd6','#ffe08a','#8affc1','#7fd8ff','#c39bff','#ff6f9c'];
+const sparkKinds = ['heart','paw','star'];
+const sparkTextures = {};
+sparkKinds.forEach(k=>{
+  sparkColors.forEach(col=>{
+    sparkTextures[k+col] = makeSpriteTexture(k, col);
+  });
+});
+
+let particles = [];
+function launchFireworks(){
+  const burstCount = 24;
+  for(let i=0;i<burstCount;i++){
+    const kind = sparkKinds[Math.floor(Math.random()*sparkKinds.length)];
+    const col = sparkColors[Math.floor(Math.random()*sparkColors.length)];
+    const tex = sparkTextures[kind+col];
+    const mat = new THREE.SpriteMaterial({ map:tex, transparent:true, depthWrite:false });
+    const spr = new THREE.Sprite(mat);
+    const scale = 0.2 + Math.random()*0.18;
+    spr.scale.set(scale, scale, 1);
+    spr.position.set(0, 0.3, 1.6);
+    scene.add(spr);
+
+    const angle = Math.random()*Math.PI*2;
+    const speed = 1.1 + Math.random()*1.8;
+    const upBias = 1.5 + Math.random()*1.3;
+    particles.push({
+      obj: spr,
+      vel: new THREE.Vector3(Math.cos(angle)*speed, upBias, Math.sin(angle)*speed*0.5),
+      life: 0,
+      maxLife: 1.0 + Math.random()*0.6
+    });
+  }
+}
+
+function updateParticles(dt){
+  for(let i=particles.length-1; i>=0; i--){
+    const p = particles[i];
+    p.life += dt;
+    const t = p.life / p.maxLife;
+    if(t >= 1){
+      scene.remove(p.obj);
+      p.obj.material.dispose();
+      particles.splice(i,1);
+      continue;
+    }
+    p.vel.y -= dt*2.4;
+    p.obj.position.addScaledVector(p.vel, dt);
+    p.obj.material.opacity = 1 - t;
+    const s = p.obj.scale.x;
+    p.obj.scale.setScalar(s + dt*0.04);
+  }
+}
+
+/* ============================================================
+   throwable 2D hearts on the page (DOM physics)
+   ============================================================ */
+const heartsField = document.getElementById('heartsField');
+const heartColors = ['#ff6f9c','#ff8fd6','#c39bff','#ff5c6a','#ffb6c8','#b06bd6'];
+let hearts = [];
+let heartsBuilt = false;
+
+function heartSVG(color){
+  return `<svg width="30" height="27" viewBox="0 0 30 27" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15 27 C 2 18, -2 8, 6 3 C 11 0, 15 3, 15 8 C 15 3, 19 0, 24 3 C 32 8, 28 18, 15 27 Z" fill="${color}"/>
+  </svg>`;
+}
+
+function buildHearts(){
+  heartsField.innerHTML = '';
+  hearts = [];
+  const bounds = heartsField.getBoundingClientRect();
+  const count = 12;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'heart';
+    const size = 26 + Math.random()*14;
+    el.style.width = size+'px';
+    el.style.height = (size*0.9)+'px';
+    el.innerHTML = heartSVG(heartColors[i % heartColors.length]);
+    heartsField.appendChild(el);
+
+    const x = 20 + Math.random()*(Math.max(bounds.width-60,40));
+    const y = bounds.height*0.55 + Math.random()*(bounds.height*0.35);
+    const h = {
+      el, x, y, size,
+      vx:(Math.random()-0.5)*40,
+      vy:-40 - Math.random()*60,
+      dragging:false,
+      offX:0, offY:0,
+      px:0, py:0, pt:0
+    };
+    hearts.push(h);
+    applyHeartTransform(h);
+    attachHeartEvents(h);
+  }
+  heartsBuilt = true;
+}
+
+function applyHeartTransform(h){
+  h.el.style.transform = `translate(${h.x}px, ${h.y}px)`;
+}
+
+function attachHeartEvents(h){
+  h.el.addEventListener('pointerdown', (e)=>{
+    e.stopPropagation();
+    h.dragging = true;
+    h.el.setPointerCapture(e.pointerId);
+    const rect = heartsField.getBoundingClientRect();
+    h.offX = e.clientX - rect.left - h.x;
+    h.offY = e.clientY - rect.top - h.y;
+    h.px = e.clientX; h.py = e.clientY; h.pt = performance.now();
+    h.vx = 0; h.vy = 0;
+  });
+  h.el.addEventListener('pointermove', (e)=>{
+    if(!h.dragging) return;
+    const rect = heartsField.getBoundingClientRect();
+    const nx = e.clientX - rect.left - h.offX;
+    const ny = e.clientY - rect.top - h.offY;
+    const now = performance.now();
+    const dt = Math.max(now - h.pt, 1) / 1000;
+    h.vx = (e.clientX - h.px) / dt * 0.6;
+    h.vy = (e.clientY - h.py) / dt * 0.6;
+    h.px = e.clientX; h.py = e.clientY; h.pt = now;
+    h.x = nx; h.y = ny;
+    applyHeartTransform(h);
+  });
+  const release = (e)=>{
+    if(!h.dragging) return;
+    h.dragging = false;
+    try{ h.el.releasePointerCapture(e.pointerId); }catch(err){}
+  };
+  h.el.addEventListener('pointerup', release);
+  h.el.addEventListener('pointercancel', release);
+}
+
+function updateHearts(dt){
+  if(!heartsBuilt) return;
+  const bounds = heartsField.getBoundingClientRect();
+  const w = bounds.width, hgt = bounds.height;
+  hearts.forEach(h=>{
+    if(h.dragging) return;
+    h.vy += 480*dt; // gravity
+    h.vx *= 0.995;
+    h.vy *= 0.995;
+    h.x += h.vx*dt;
+    h.y += h.vy*dt;
+
+    if(h.x < 0){ h.x = 0; h.vx = -h.vx*0.55; }
+    if(h.x + h.size > w){ h.x = w - h.size; h.vx = -h.vx*0.55; }
+    if(h.y < 0){ h.y = 0; h.vy = -h.vy*0.5; }
+    if(h.y + h.size > hgt){ h.y = hgt - h.size; h.vy = -h.vy*0.45; h.vx *= 0.9; }
+
+    applyHeartTransform(h);
+  });
+}
+
+/* ============================================================
+   kiss overlay (double-click on the open page)
+   ============================================================ */
+const kissOverlay = document.getElementById('kissOverlay');
+let kissTimer = null;
+function showKiss(){
+  kissOverlay.classList.add('show');
+  launchFireworks();
+  clearTimeout(kissTimer);
+  kissTimer = setTimeout(()=>{
+    kissOverlay.classList.remove('show');
+  }, 1300);
+}
+
+const pageEl = document.getElementById('page');
+pageEl.addEventListener('dblclick', (e)=>{
+  if(e.target.closest('.heart')) return;
+  showKiss();
+});
+
+/* ============================================================
+   book open/close + hinge animation
+   ============================================================ */
+const overlay = document.getElementById('book-overlay');
+const hint = document.getElementById('hint');
+let bookOpen = false;
+let openTimer = null;
+
+function openBook(){
+  bookOpen = true;
+  targetRotY = 0;
+  userRotX = 0;
+  hint.style.opacity = 0;
+  clearTimeout(openTimer);
+  openTimer = setTimeout(()=>{
+    overlay.classList.add('open');
+    buildHearts();
+  }, 480);
+}
+function closeBook(){
+  bookOpen = false;
+  overlay.classList.remove('open');
+  kissOverlay.classList.remove('show');
+  hint.style.opacity = 1;
+  clearTimeout(openTimer);
+}
+function cycleExpression(){
+  exprIndex = (exprIndex + 1) % expressions.length;
+  redrawCover();
+  launchFireworks();
+}
+
+overlay.addEventListener('click', (e)=>{
+  if(e.target === overlay){
+    closeBook();
+  }
+});
+
+/* ============================================================
+   drag-to-rotate book + tap / double-tap on the cover
+   ============================================================ */
+let isDragging = false;
+let dragMoved = 0;
+let lastX = 0, lastY = 0;
+let velY = 0;
+let targetRotY = 0.15;
+let userRotX = 0;
+
+let clickTimer = null;
+const CLICK_DELAY = 260;
+
+function onPointerDown(e){
+  if(bookOpen) return;
+  isDragging = true;
+  dragMoved = 0;
+  lastX = e.clientX; lastY = e.clientY;
+  velY = 0;
+  container.classList.add('dragging');
+}
+function onPointerMove(e){
+  if(!isDragging || bookOpen) return;
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  dragMoved += Math.abs(dx) + Math.abs(dy);
+  targetRotY += dx * 0.008;
+  userRotX = THREE.MathUtils.clamp(userRotX + dy*0.004, -0.5, 0.5);
+  velY = dx * 0.008;
+  lastX = e.clientX; lastY = e.clientY;
+}
+function onPointerUp(e){
+  if(!isDragging) return;
+  isDragging = false;
+  container.classList.remove('dragging');
+  if(dragMoved < 6){
+    handleTap();
+  }
+}
+
+function handleTap(){
+  if(bookOpen) return;
+  if(clickTimer){
+    clearTimeout(clickTimer);
+    clickTimer = null;
+    cycleExpression();
+  } else {
+    clickTimer = setTimeout(()=>{
+      clickTimer = null;
+      openBook();
+    }, CLICK_DELAY);
+  }
+}
+
+renderer.domElement.addEventListener('pointerdown', onPointerDown);
+window.addEventListener('pointermove', onPointerMove);
+window.addEventListener('pointerup', onPointerUp);
+
+/* ============================================================
+   render loop
+   ============================================================ */
+const clock = new THREE.Clock();
+let idleTimer = 0;
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  starMat.uniforms.uTime.value = t;
+  stars.rotation.y += dt*0.01;
+
+  kittySprites.forEach(k=>{
+    const pulse = 0.5 + 0.5*Math.sin(t*(2*Math.PI/k.period) + k.phase);
+    k.obj.material.opacity = 0.12 + pulse*0.55;
+    k.obj.position.x = k.basePos.x + Math.sin(t*0.15 + k.driftPhase)*1.2;
+    k.obj.position.y = k.basePos.y + Math.cos(t*0.12 + k.driftPhase)*1.0;
+  });
+
+  if(!isDragging && !bookOpen){
+    velY *= 0.92;
+    targetRotY += velY;
+    idleTimer += dt;
+    if(idleTimer > 1.8){
+      targetRotY += dt*0.08;
+    }
+  } else {
+    idleTimer = 0;
+  }
+
+  bookGroup.rotation.y += (targetRotY - bookGroup.rotation.y) * 0.12;
+  bookGroup.rotation.x += (userRotX - bookGroup.rotation.x) * 0.12;
+  bookGroup.position.y = bookOpen ? 0 : Math.sin(t*1.1)*0.05;
+
+  const targetHinge = bookOpen ? -2.55 : 0;
+  frontPivot.rotation.y += (targetHinge - frontPivot.rotation.y) * 0.07;
+
+  updateParticles(dt);
+  updateHearts(dt);
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
