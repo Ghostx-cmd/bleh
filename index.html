@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>happy birthday amna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{--wine:#7a1236;--wine-deep:#3d0a1c;--rose:#e8b4c0;--pink:#f08fae;--cream:#f6e9ec;
+    --script:'Great Vibes','Brush Script MT',cursive;--serif:'Instrument Serif',Georgia,serif;
+    --star:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+  *{box-sizing:border-box;margin:0}
+  [hidden]{display:none!important}
+  html,body{height:100%;overflow:hidden}
+  body{background:#000;color:var(--cream);font-family:var(--serif);font-size:1.25rem;line-height:1.5}
+  #sky{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  #app{position:relative;z-index:1;height:100vh;height:100dvh}
+  .screen{position:absolute;inset:0;display:none;padding:1rem 1.25rem;text-align:center;overflow-y:auto;overflow-x:hidden}
+  .screen.active{display:flex;animation:fade .6s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}}
+  .inner{margin:auto;width:100%;max-width:480px}
+  h1,h2{font-family:var(--script);font-weight:400;line-height:1}
+  .hb{display:block;font-size:clamp(2.2rem,9vw,3rem);color:var(--rose)}
+  .nm{display:block;font-size:clamp(5rem,26vw,8rem);color:var(--pink);text-shadow:0 0 36px var(--wine),0 0 8px var(--wine);margin-top:.1em}
+  h2{font-size:clamp(2.2rem,9vw,3rem);color:var(--rose)}
+  .hint{color:var(--rose);font-style:italic;margin-top:.9rem;font-size:1.05rem}
+  .rest{visibility:hidden}
+  .btn{font-family:var(--serif);font-size:1.2rem;color:var(--cream);background:rgba(122,18,54,.9);border:2px solid var(--rose);border-radius:999px;padding:.6rem 1.6rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .btn:hover{background:var(--wine)}.btn:focus-visible{outline:2px solid var(--cream);outline-offset:3px}
+  .btn.small{font-size:1.05rem;padding:.4rem 1.2rem}
+  .back{margin-top:1.2rem}
+
+  /* INTRO */
+  .big{font-size:clamp(1.6rem,6.5vw,2.1rem);line-height:1.35;text-wrap:balance}
+  .go{opacity:0;pointer-events:none;margin-top:1.8rem;transition:opacity .6s}.go.show{opacity:1;pointer-events:auto}
+
+  /* MENU */
+  .opts{display:grid;gap:.9rem;margin-top:1.6rem}
+  .opt{display:flex;align-items:center;gap:1rem;text-align:left;border-radius:16px;padding:.7rem 1.1rem;width:100%}
+  .n{flex:none;min-width:3.6rem;padding:.1rem .6rem;border-radius:999px;background:var(--rose);color:var(--wine-deep);text-align:center;font-size:1.15rem;white-space:nowrap}
+
+  /* GIFT BOX */
+  .giftbox{position:relative}
+  .box{position:relative;width:230px;height:210px;display:block;margin:2.5rem auto 0;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .6s ease,margin .6s ease;transform-origin:50% 0}
+  .box:focus-visible{outline:2px solid var(--rose);outline-offset:12px;border-radius:12px}
+  .open .box{transform:scale(.6);margin-bottom:-84px;margin-top:1.8rem}
+  .base{position:absolute;left:12px;right:12px;bottom:0;height:140px;border-radius:6px 6px 16px 16px;background:linear-gradient(90deg,#5c0f2b,#8e1a42 50%,#5c0f2b);box-shadow:0 18px 44px rgba(160,30,80,.5)}
+  .lid::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:34px;margin-left:-17px;background:linear-gradient(90deg,#d98aa0,#ffd3df 50%,#d98aa0)}
+  .lid{position:absolute;left:0;right:0;bottom:128px;height:58px;border-radius:10px;background:linear-gradient(90deg,#7a1236,#a8214f 50%,#7a1236);transform-origin:0 100%;transition:transform .6s cubic-bezier(.3,1.5,.5,1);z-index:2}
+  .open .lid{transform:translate(-30px,-56px) rotate(-26deg)}
+  .ear{position:absolute;top:-48px;width:56px;height:50px;background:linear-gradient(#a8214f,#7a1236);clip-path:polygon(0 100%,50% 0,100% 100%)}
+  .ear.l{left:8px;transform:rotate(-10deg)}.ear.r{right:8px;transform:rotate(10deg)}
+  .ear b{position:absolute;inset:15px 16px 0;background:#ffd3df;opacity:.75;clip-path:polygon(0 100%,50% 0,100% 100%)}
+  .bow{position:absolute;left:50%;top:-14px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:#d98aa0;z-index:3}
+  .bow::before,.bow::after{content:"";position:absolute;top:-8px;width:34px;height:24px;border-radius:50%;background:#ffd3df;border:5px solid #d98aa0}
+  .bow::before{left:-32px;transform:rotate(-18deg)}.bow::after{left:12px;transform:rotate(18deg)}
+  .open .hint{display:none}
+  .letter{max-height:0;opacity:0;overflow:hidden;transition:max-height .9s ease,opacity .5s .2s,margin .5s}
+  .open .letter{max-height:520px;opacity:1;margin-top:1.2rem}
+  .paper{background:var(--cream);color:var(--wine-deep);border-radius:8px;padding:1.3rem 1.3rem 1rem;box-shadow:0 0 40px rgba(240,143,174,.28)}
+  .paper p{font-size:clamp(1.2rem,4.6vw,1.45rem);line-height:1.4}
+  .sig{font-family:var(--script);font-size:1.9rem!important;color:var(--wine);margin-top:.4rem}
+
+  /* PLUSHIE */
+  .plush-wrap{position:relative;width:min(260px,62vw);margin:0 auto}
+  #plush{width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;transform-origin:50% 100%;background:none;border:0;padding:0;display:block}
+  #plush:focus-visible{outline:2px solid var(--rose);outline-offset:8px;border-radius:24px}
+  #plush.squish{animation:squish .5s ease}
+  @keyframes squish{30%{transform:scale(1.12,.84)}60%{transform:scale(.95,1.08)}100%{transform:scale(1)}}
+  .heart{position:absolute;left:50%;top:30%;font-size:1.5rem;pointer-events:none;animation:float 1.3s ease-out forwards}
+  @keyframes float{to{transform:translate(var(--dx),-160px) scale(1.3);opacity:0}}
+  .spark{position:absolute;width:14px;height:14px;pointer-events:none;clip-path:var(--star);animation:fly 1.1s ease-out forwards}
+  @keyframes fly{from{transform:translate(-50%,-50%) scale(.4)}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.3) rotate(140deg);opacity:0}}
+
+  /* GAME + LICENSE */
+  .g-text{font-size:1.4rem;margin:1rem auto 1.4rem;max-width:20em;text-wrap:balance}
+  .hud{display:flex;justify-content:space-between;color:var(--rose);font-size:1.3rem;margin:1rem .3rem .4rem}
+  #arena{position:relative;width:100%;height:min(46vh,340px);border:2px solid var(--rose);border-radius:14px;background:rgba(61,10,28,.5);overflow:hidden;touch-action:manipulation}
+  .gstar{position:absolute;width:56px;height:56px;background:none;border:0;padding:0;cursor:pointer;animation:pop .25s ease}
+  .gstar::before{content:"";position:absolute;inset:4px;background:var(--c);clip-path:var(--star)}
+  @keyframes pop{from{transform:scale(0)}}
+  #g-end{position:relative;margin-top:1rem}
+  .g-msg{font-size:1.25rem;line-height:1.4;max-width:22em;margin:0 auto 1rem;text-wrap:balance}
+  .stick{display:block;width:min(100%,320px);margin:0 auto;border-radius:14px}
+  .row{display:flex;gap:.7rem;justify-content:center;margin-top:1rem}
+  @media (prefers-reduced-motion:reduce){#plush.squish,.screen.active,.gstar{animation:none}.lid,.box{transition:none}}
+
+  /* ---- polish ---- */
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(60% 45% at 12% 8%,rgba(122,18,54,.5),transparent 70%),radial-gradient(55% 40% at 92% 88%,rgba(112,60,190,.3),transparent 70%),radial-gradient(45% 35% at 85% 12%,rgba(240,143,174,.16),transparent 70%)}
+  body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7))}
+  .btn{background:linear-gradient(135deg,rgba(158,30,76,.88),rgba(61,10,28,.92));border:1.5px solid rgba(232,180,192,.6);box-shadow:0 6px 24px rgba(122,18,54,.45),inset 0 1px 0 rgba(255,255,255,.16);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .2s,box-shadow .2s,border-color .2s}
+  .btn:hover{transform:translateY(-2px);border-color:var(--pink);box-shadow:0 10px 30px rgba(240,143,174,.35),inset 0 1px 0 rgba(255,255,255,.2)}
+  .btn:active{transform:scale(.97)}
+  .opt{padding:.85rem 1.2rem;font-size:1.3rem}
+  .n{background:linear-gradient(135deg,#ffd3df,#f08fae);box-shadow:0 0 16px rgba(240,143,174,.55)}
+  .hb{text-shadow:0 0 18px rgba(232,180,192,.45)}
+  .nm{text-shadow:0 0 44px rgba(240,143,174,.6),0 0 10px var(--wine);animation:bob 4s ease-in-out infinite}
+  h2{text-shadow:0 0 22px rgba(240,143,174,.4)}
+  @keyframes bob{50%{transform:translateY(-6px)}}
+  .big{text-shadow:0 0 24px rgba(240,143,174,.35)}
+  .go.show{animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{50%{box-shadow:0 0 32px rgba(240,143,174,.65),inset 0 1px 0 rgba(255,255,255,.16)}}
+  .giftbox:not(.open) .box{animation:bob 3s ease-in-out infinite}
+  .paper{position:relative;background:linear-gradient(#fbf1f3,#f1dde2);border:1px solid rgba(122,18,54,.2);box-shadow:0 0 50px rgba(240,143,174,.35),0 12px 30px rgba(0,0,0,.55);transform:rotate(-1deg)}
+  .paper::before{content:"";position:absolute;top:-11px;left:50%;width:72px;height:22px;margin-left:-36px;background:rgba(240,143,174,.6);border-radius:3px;transform:rotate(3deg)}
+  .plush-wrap::before{content:"";position:absolute;inset:-12% -20%;background:radial-gradient(closest-side,rgba(240,143,174,.32),transparent);z-index:-1}
+  #plush svg{animation:bob 3.5s ease-in-out infinite}
+  #arena{background:radial-gradient(circle at 50% 50%,rgba(122,18,54,.38),rgba(20,0,10,.65));border-color:rgba(232,180,192,.7);box-shadow:0 0 34px rgba(240,143,174,.25),inset 0 0 44px rgba(122,18,54,.45)}
+  .hud{text-shadow:0 0 12px rgba(240,143,174,.5)}
+  .stick{box-shadow:0 0 44px rgba(240,143,174,.32),0 12px 30px rgba(0,0,0,.55)}
+  @media (prefers-reduced-motion:reduce){.nm,#plush svg,.giftbox .box,.go.show{animation:none!important}}
+  .face{position:absolute;left:12px;bottom:0;width:206px;height:140px;overflow:visible;pointer-events:none;z-index:1}
+  .eyes{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+  @keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+  .tail{transform-origin:204px 112px;animation:wag 2.4s ease-in-out infinite}
+  @keyframes wag{50%{transform:rotate(9deg)}}
+  @media (prefers-reduced-motion:reduce){.eyes,.tail{animation:none!important}}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<main id="app">
+
+  <!-- intro -->
+  <div class="screen active" id="s-intro"><div class="inner">
+    <p class="big"><span id="i-shown"></span><span class="rest" id="i-rest"></span></p>
+    <button class="btn go" id="openBtn" data-go="s-menu">open it</button>
+  </div></div>
+
+  <!-- menu -->
+  <div class="screen" id="s-menu"><div class="inner">
+    <h1><span class="hb">happy 16th birthday</span><span class="nm" id="name">amna</span></h1>
+    <div class="opts">
+      <button class="btn opt" data-go="s-msg"><span class="n">1 :3</span>a message for you</button>
+      <button class="btn opt" data-go="s-plush"><span class="n">2 :p</span>your plushie</button>
+      <button class="btn opt" data-go="s-game"><span class="n">3 XD</span>a little game</button>
+    </div>
+  </div></div>
+
+  <!-- 1: message -->
+  <div class="screen" id="s-msg"><div class="inner">
+    <div class="giftbox" id="gift">
+      <button class="box" id="box" aria-expanded="false" aria-label="open the gift box">
+        <span class="lid"><i class="ear l"><b></b></i><i class="ear r"><b></b></i><i class="bow"></i></span>
+        <span class="base"></span>
+        <svg class="face" viewBox="0 0 206 140" aria-hidden="true">
+          <path class="tail" d="M204 112C252 116 254 66 230 56" fill="none" stroke="#8e1a42" stroke-width="14" stroke-linecap="round"/>
+          <g class="eyes"><ellipse cx="62" cy="52" rx="12" ry="15" fill="#2a0a14"/><ellipse cx="144" cy="52" rx="12" ry="15" fill="#2a0a14"/>
+            <circle cx="66" cy="46" r="4.5" fill="#fff"/><circle cx="148" cy="46" r="4.5" fill="#fff"/><circle cx="58" cy="58" r="2.2" fill="#fff"/><circle cx="140" cy="58" r="2.2" fill="#fff"/></g>
+          <ellipse cx="36" cy="80" rx="14" ry="8" fill="#ff5c8a" opacity=".5"/><ellipse cx="170" cy="80" rx="14" ry="8" fill="#ff5c8a" opacity=".5"/>
+          <path d="M96 70h14l-7 9z" fill="#ffb3c8"/>
+          <path d="M103 79q-8 10 -16 2M103 79q8 10 16 2" fill="none" stroke="#2a0a14" stroke-width="3" stroke-linecap="round"/>
+          <path d="M30 70L-10 62M30 78L-12 80M30 86L-8 98M176 70L216 62M176 78L218 80M176 86L214 98" stroke="#ffd3df" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+          <ellipse cx="60" cy="138" rx="26" ry="14" fill="#a8214f" stroke="#5c0f2b" stroke-width="2"/><ellipse cx="146" cy="138" rx="26" ry="14" fill="#a8214f" stroke="#5c0f2b" stroke-width="2"/>
+          <path d="M50 134v6M60 132v8M70 134v6M136 134v6M146 132v8M156 134v6" stroke="#5c0f2b" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <p class="hint">tap the box, it's for you :3</p>
+      <div class="letter"><div class="paper">
+        <p><span id="shown"></span><span class="rest" id="rest"></span></p>
+        <p class="sig" id="sig"></p>
+      </div></div>
+    </div>
+    <button class="btn small back" data-go="s-menu">back</button>
+  </div></div>
+
+  <!-- 2: plushie -->
+  <div class="screen" id="s-plush"><div class="inner">
+    <div class="plush-wrap">
+      <button id="plush" aria-label="squeeze the cat plushie">
+        <svg viewBox="0 0 260 262" aria-hidden="true">
+          <ellipse cx="130" cy="256" rx="82" ry="6" fill="#3d0a1c"/>
+          <path d="M174 222 C228 224 234 176 206 164" fill="none" stroke="#f08fae" stroke-width="18" stroke-linecap="round"/>
+          <polygon points="52,92 58,26 112,50" fill="#f08fae" stroke="#f08fae" stroke-width="14" stroke-linejoin="round"/>
+          <polygon points="208,92 202,26 148,50" fill="#f08fae" stroke="#f08fae" stroke-width="14" stroke-linejoin="round"/>
+          <polygon points="66,82 68,46 96,60" fill="#ffd3df"/>
+          <polygon points="194,82 192,46 164,60" fill="#ffd3df"/>
+          <ellipse cx="130" cy="204" rx="50" ry="42" fill="#f08fae" stroke="#d9668c" stroke-width="2"/>
+          <ellipse cx="104" cy="242" rx="20" ry="12" fill="#f08fae" stroke="#d9668c" stroke-width="2"/>
+          <ellipse cx="156" cy="242" rx="20" ry="12" fill="#f08fae" stroke="#d9668c" stroke-width="2"/>
+          <circle cx="104" cy="244" r="5" fill="#ffd3df"/><circle cx="156" cy="244" r="5" fill="#ffd3df"/>
+          <ellipse cx="130" cy="210" rx="30" ry="26" fill="#ffd3df"/>
+          <path d="M130 224 c-12 -8 -16 -18 -7 -21 c4 -1 7 1 7 4 c0 -3 3 -5 7 -4 c9 3 5 13 -7 21z" fill="#7a1236"/>
+          <ellipse cx="82" cy="196" rx="14" ry="22" transform="rotate(20 82 196)" fill="#f08fae" stroke="#d9668c" stroke-width="2"/>
+          <ellipse cx="178" cy="196" rx="14" ry="22" transform="rotate(-20 178 196)" fill="#f08fae" stroke="#d9668c" stroke-width="2"/>
+          <ellipse cx="130" cy="108" rx="82" ry="68" fill="#f08fae" stroke="#d9668c" stroke-width="2"/>
+          <ellipse cx="130" cy="108" rx="74" ry="60" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 6" opacity=".45"/>
+          <ellipse cx="96" cy="112" rx="12" ry="15" fill="#2a0a14"/><ellipse cx="164" cy="112" rx="12" ry="15" fill="#2a0a14"/>
+          <circle cx="100" cy="106" r="5" fill="#fff"/><circle cx="168" cy="106" r="5" fill="#fff"/>
+          <circle cx="92" cy="119" r="2.4" fill="#fff"/><circle cx="160" cy="119" r="2.4" fill="#fff"/>
+          <ellipse cx="68" cy="134" rx="13" ry="8" fill="#ff5c8a" opacity=".5"/>
+          <ellipse cx="192" cy="134" rx="13" ry="8" fill="#ff5c8a" opacity=".5"/>
+          <ellipse cx="130" cy="127" rx="5" ry="3.5" fill="#c23a66"/>
+          <path d="M130 131 q-7 9 -14 2 M130 131 q7 9 14 2" fill="none" stroke="#2a0a14" stroke-width="2.5" stroke-linecap="round"/>
+          <polygon points="190,56 168,42 168,70" fill="#7a1236" stroke="#e8b4c0" stroke-width="1.5" stroke-linejoin="round"/>
+          <polygon points="190,56 212,42 212,70" fill="#7a1236" stroke="#e8b4c0" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="190" cy="56" r="7" fill="#a8214f" stroke="#e8b4c0" stroke-width="1.5"/>
+        </svg>
+      </button>
+    </div>
+    <p class="hint">give it a squeeze :3</p>
+    <button class="btn small back" data-go="s-menu">back</button>
+  </div></div>
+
+  <!-- 3: license game -->
+  <div class="screen" id="s-game"><div class="inner">
+    <h2>star catcher</h2>
+    <div id="g-start">
+      <p class="g-text">catch 10 stars in 15 seconds. you got this :3</p>
+      <button class="btn" id="startBtn">start</button>
+    </div>
+    <div id="g-play" hidden>
+      <div class="hud"><span id="g-score">0/10</span><span id="g-time">15s</span></div>
+      <div id="arena"></div>
+    </div>
+    <div id="g-end" hidden>
+      <p class="g-msg" id="g-msg"></p>
+      <svg class="stick" viewBox="0 0 300 260" role="img" aria-label="a glossy frutiger aero style graphic with the words ur the best">
+        <defs>
+          <linearGradient id="aeroSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2fb4f5"/><stop offset=".65" stop-color="#9fe6ff"/><stop offset="1" stop-color="#d8f8ff"/></linearGradient>
+          <linearGradient id="aeroHill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fe055"/><stop offset="1" stop-color="#2f9e3a"/></linearGradient>
+          <radialGradient id="aeroSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="aeroBub" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".45" stop-color="#fff" stop-opacity=".12"/><stop offset="1" stop-color="#4fd8ff" stop-opacity=".45"/></radialGradient>
+          <linearGradient id="aeroGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#8fe3ff" stop-opacity=".3"/></linearGradient>
+          <linearGradient id="aeroTxt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#c5f1ff"/></linearGradient>
+          <filter id="aeroBlur"><feGaussianBlur stdDeviation="4"/></filter>
+          <filter id="aeroShadow" x="-10%" y="-30%" width="120%" height="170%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0a6fb0" flood-opacity=".7"/></filter>
+          <clipPath id="aeroClip"><rect width="300" height="260" rx="14"/></clipPath>
+        </defs>
+        <g clip-path="url(#aeroClip)">
+          <rect width="300" height="260" fill="url(#aeroSky)"/>
+          <circle cx="250" cy="30" r="80" fill="url(#aeroSun)"/>
+          <g fill="#fff" opacity=".85"><ellipse cx="60" cy="86" rx="38" ry="12"/><ellipse cx="86" cy="76" rx="26" ry="12"/><ellipse cx="226" cy="96" rx="34" ry="10"/><ellipse cx="246" cy="88" rx="20" ry="10"/></g>
+          <path d="M0 188Q90 150 170 184T300 168V260H0Z" fill="url(#aeroHill)"/>
+          <path d="M0 214Q120 174 300 208V260H0Z" fill="#58c441"/>
+          <path d="M14 232Q40 190 74 204Q62 240 14 232Z" fill="#7bdc4a" stroke="#fff" stroke-opacity=".6"/><path d="M18 230Q44 212 70 206" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.5"/>
+          <path d="M286 238Q262 196 228 210Q240 246 286 238Z" fill="#7bdc4a" stroke="#fff" stroke-opacity=".6"/><path d="M282 236Q256 218 232 212" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.5"/>
+          <circle cx="38" cy="52" r="18" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="32.6" cy="44.8" rx="6.3" ry="3.6" fill="#fff" opacity=".85"/><circle cx="72" cy="112" r="9" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="69.3" cy="108.4" rx="3.1" ry="1.8" fill="#fff" opacity=".85"/><circle cx="262" cy="108" r="15" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="257.5" cy="102.0" rx="5.2" ry="3.0" fill="#fff" opacity=".85"/><circle cx="276" cy="160" r="8" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="273.6" cy="156.8" rx="2.8" ry="1.6" fill="#fff" opacity=".85"/><circle cx="30" cy="158" r="12" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="26.4" cy="153.2" rx="4.2" ry="2.4" fill="#fff" opacity=".85"/><circle cx="228" cy="60" r="7" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="225.9" cy="57.2" rx="2.4" ry="1.4" fill="#fff" opacity=".85"/><circle cx="100" cy="40" r="6" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="98.2" cy="37.6" rx="2.1" ry="1.2" fill="#fff" opacity=".85"/><circle cx="190" cy="34" r="10" fill="url(#aeroBub)" stroke="#fff" stroke-opacity=".85" stroke-width="1.5"/><ellipse cx="187.0" cy="30.0" rx="3.5" ry="2.0" fill="#fff" opacity=".85"/>
+          <circle cx="262" cy="206" r="13" fill="#ff8fb7" fill-opacity=".55" stroke="#fff" stroke-width="1.5"/><ellipse cx="258" cy="200" rx="5" ry="3" fill="#fff" opacity=".85"/>
+          <ellipse cx="150" cy="184" rx="104" ry="9" fill="#0a5f9e" opacity=".3" filter="url(#aeroBlur)"/>
+          <rect x="40" y="88" width="220" height="84" rx="42" fill="url(#aeroGlass)" stroke="#fff" stroke-width="2.5"/>
+          <path d="M62 106Q150 82 238 106Q236 132 150 130Q64 132 62 106Z" fill="#fff" opacity=".42"/>
+          <text x="150" y="142" text-anchor="middle" font-family="'Segoe UI','Trebuchet MS',Frutiger,Arial,sans-serif" font-weight="700" font-size="32" textLength="176" lengthAdjust="spacingAndGlyphs" fill="url(#aeroTxt)" stroke="#2aa4e6" stroke-width="3" paint-order="stroke" stroke-linejoin="round" filter="url(#aeroShadow)">ur the best</text>
+          <g fill="#fff"><path d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z" transform="translate(52 130)"/><path d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z" transform="translate(250 76) scale(.8)"/><path d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z" transform="translate(140 62) scale(.7)"/><path d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z" transform="translate(212 196) scale(.9)"/></g>
+        </g>
+      </svg>
+      <div class="row"><button class="btn small" id="again">play again</button></div>
+    </div>
+    <button class="btn small back" data-go="s-menu">back</button>
+  </div></div>
+</main>
+
+<script>
+  // EDIT THESE
+  const CONFIG = {
+    name: "amna",
+    intro: "hii, today is ur birthday, I made a lil surprise for u. I really hope u like it",
+    message: "hi amna, I know we’ve been friends for maybe a little while but u mean the world to me, may Allah make u the happiest person in the world, happy birthday!!!!",
+    from: "umar",
+    win: "you passed!! of course you did. you make everyone around you feel lucky, and I'm so glad I know you. happy birthday amna <3",
+    lose: "so close! but you don't have to win anything for me to be proud of you. you're already amazing just the way you are :3"
+  };
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = id => document.getElementById(id);
+  $('name').textContent = CONFIG.name;
+  $('sig').textContent = '— ' + CONFIG.from + ' <3';
+
+  // Colorful twinkling sky
+  const cv = $('sky'), cx = cv.getContext('2d');
+  const COLORS = ['#ff7eb6','#e8b4c0','#ffd36e','#b79cff','#7ee7ff','#ffffff','#ff5c8a'];
+  let W, H, stars = [], shoot = null;
+  function resize(){
+    const d = devicePixelRatio || 1; W = innerWidth; H = innerHeight;
+    cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0);
+    stars = Array.from({length: Math.round(W * H / 6500)}, () => ({
+      x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.4 + .5,
+      c: COLORS[Math.random() * COLORS.length | 0], p: Math.random() * 6.28,
+      s: Math.random() * 1.6 + .5, big: Math.random() < .14 }));
+  }
+  function draw(t){
+    cx.clearRect(0, 0, W, H);
+    for (const s of stars){
+      cx.globalAlpha = reduce ? .9 : .45 + .55 * Math.sin(t / 1000 * s.s + s.p);
+      cx.fillStyle = s.c; cx.beginPath();
+      if (s.big){
+        const R = s.r * 4;
+        cx.moveTo(s.x, s.y - R); cx.quadraticCurveTo(s.x, s.y, s.x + R, s.y);
+        cx.quadraticCurveTo(s.x, s.y, s.x, s.y + R); cx.quadraticCurveTo(s.x, s.y, s.x - R, s.y);
+        cx.quadraticCurveTo(s.x, s.y, s.x, s.y - R);
+      } else cx.arc(s.x, s.y, s.r, 0, 6.283);
+      cx.fill();
+    }
+    if (!reduce){
+      if (!shoot && Math.random() < .004) shoot = {x: Math.random() * W * .7, y: Math.random() * H * .4, l: 0};
+      if (shoot){
+        cx.globalAlpha = 1 - shoot.l / 60; cx.strokeStyle = '#fff'; cx.lineWidth = 2;
+        cx.beginPath(); cx.moveTo(shoot.x, shoot.y); cx.lineTo(shoot.x - 46, shoot.y - 20); cx.stroke();
+        shoot.x += 9; shoot.y += 4; if (++shoot.l > 60) shoot = null;
+      }
+      requestAnimationFrame(draw);
+    }
+  }
+  resize(); requestAnimationFrame(draw);
+  addEventListener('resize', () => { resize(); if (reduce) draw(0); });
+
+  // Helpers
+  function burst(parent, n, x, y){
+    for (let i = 0; i < n; i++){
+      const s = document.createElement('span'); s.className = 'spark';
+      s.style.background = COLORS[Math.random() * COLORS.length | 0];
+      s.style.left = x; s.style.top = y;
+      s.style.setProperty('--dx', (Math.random() * 300 - 150) + 'px');
+      s.style.setProperty('--dy', (Math.random() * -220 - 20) + 'px');
+      parent.appendChild(s); setTimeout(() => s.remove(), 1200);
+    }
+  }
+  function typeText(shown, rest, text, done){
+    rest.textContent = text; shown.textContent = '';
+    if (reduce){ shown.textContent = text; rest.textContent = ''; if (done) done(); return; }
+    let i = 0;
+    const id = setInterval(() => {
+      i++; shown.textContent = text.slice(0, i); rest.textContent = text.slice(i);
+      if (i >= text.length){ clearInterval(id); if (done) done(); }
+    }, 38);
+  }
+
+  // Navigation (no scrolling, one screen at a time)
+  function show(id){
+    stopGame();
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    if (id === 's-game') resetGame();
+  }
+  document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => show(b.dataset.go)));
+
+  // Intro
+  setTimeout(() => typeText($('i-shown'), $('i-rest'), CONFIG.intro, () => $('openBtn').classList.add('show')), 700);
+
+  // 1: gift box
+  const gift = $('gift'), box = $('box'); let typed = false;
+  $('rest').textContent = CONFIG.message;
+  box.addEventListener('click', () => {
+    const open = gift.classList.toggle('open');
+    box.setAttribute('aria-expanded', open);
+    if (open){
+      burst(gift, 16, '50%', '120px');
+      if (!typed){ typed = true; setTimeout(() => typeText($('shown'), $('rest'), CONFIG.message), 500); }
+    }
+  });
+
+  // 2: plushie
+  const plush = $('plush');
+  plush.addEventListener('click', () => {
+    plush.classList.remove('squish'); void plush.offsetWidth; plush.classList.add('squish');
+    const wrap = plush.parentElement;
+    for (let i = 0; i < 6; i++){
+      const h = document.createElement('span'); h.className = 'heart'; h.textContent = '<3';
+      h.style.color = ['#ff7eb6','#e8b4c0','#ff5c8a'][i % 3];
+      h.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px');
+      h.style.marginLeft = (Math.random() * 60 - 30) + 'px';
+      wrap.appendChild(h); setTimeout(() => h.remove(), 1400);
+    }
+    burst(wrap, 8, '50%', '40%');
+  });
+
+  // 3: star-catching driving test
+  const GOAL = 10, TIME = 15; let score = 0, time = TIME, iv = [];
+  const upd = () => { $('g-score').textContent = score + '/' + GOAL; $('g-time').textContent = time + 's'; };
+  function stopGame(){ iv.forEach(clearInterval); iv = []; $('arena').innerHTML = ''; }
+  function resetGame(){ stopGame(); $('g-start').hidden = false; $('g-play').hidden = true; $('g-end').hidden = true; }
+  function spawn(){
+    const a = $('arena'), b = document.createElement('button');
+    b.className = 'gstar'; b.setAttribute('aria-label', 'catch the star');
+    b.style.left = Math.random() * (a.clientWidth - 56) + 'px';
+    b.style.top = Math.random() * (a.clientHeight - 56) + 'px';
+    b.style.setProperty('--c', COLORS[Math.random() * COLORS.length | 0]);
+    b.addEventListener('click', () => { score++; upd(); b.remove(); });
+    a.appendChild(b); setTimeout(() => b.remove(), 1500);
+  }
+  function startGame(){
+    stopGame(); score = 0; time = TIME; upd();
+    $('g-start').hidden = true; $('g-end').hidden = true; $('g-play').hidden = false;
+    spawn(); iv.push(setInterval(spawn, 650));
+    iv.push(setInterval(() => { time--; upd(); if (time <= 0) endGame(); }, 1000));
+  }
+  function endGame(){
+    stopGame(); $('g-play').hidden = true;
+    const win = score >= GOAL;
+    $('g-msg').textContent = win ? CONFIG.win : CONFIG.lose;
+    $('g-end').hidden = false;
+    if (win) burst($('g-end'), 16, '50%', '15%');
+  }
+  $('startBtn').addEventListener('click', startGame);
+  $('again').addEventListener('click', startGame);
+</script>
+</body>
+</html>
